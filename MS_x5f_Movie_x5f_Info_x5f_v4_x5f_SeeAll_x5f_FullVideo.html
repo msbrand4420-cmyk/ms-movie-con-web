@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="monetag" content="1fc55d7483f4e27f04b567c987697adb">
+<title>MS Movie Info - Movies, Rating & Story</title>
+<meta name="description" content="MS Movie Info - Best movies, rating, story and download info">
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial;background:#0f0f1a;color:#fff}
+header{background:#1a1a2e;padding:16px;text-align:center}header h1{margin:0;color:#ffd700}header p{opacity:.7;font-size:13px}
+nav{display:flex;gap:16px;justify-content:center;background:#222;padding:10px}nav a{color:#fff;text-decoration:none;font-size:14px}
+.hero{padding:30px 16px;text-align:center;background:linear-gradient(135deg,#2a2aff,#ff2a6d)}.hero h2{margin:0;font-size:26px}.hero p{opacity:.8}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:16px}
+.card{background:#1e1e32;border-radius:14px;overflow:hidden;cursor:pointer;border:2px solid transparent}.card:active{border-color:#ffd700;transform:scale(.98)}.card img{width:100%;height:140px;object-fit:cover;background:#333}.card div{padding:12px}.card h3{margin:0;font-size:15px}.card p{font-size:12px;opacity:.7;line-height:1.4}
+.badge{background:#ffd700;color:#000;font-size:11px;padding:3px 8px;border-radius:10px;font-weight:800}
+.btn{display:block;text-align:center;background:#ffd700;color:#000;padding:12px;border-radius:10px;font-weight:800;text-decoration:none;margin:16px}
+footer{background:#111;padding:20px;text-align:center;font-size:12px;opacity:.7;line-height:1.6}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.85);display:none;align-items:flex-end;justify-content:center;z-index:99}.modal.open{display:flex}
+.sheet{background:#1e1e32;width:100%;max-width:600px;border-radius:20px 20px 0 0;padding:20px;padding-bottom:40px;max-height:85vh;overflow:auto}.sheet img{width:100%;height:180px;object-fit:cover;border-radius:12px}
+.close{float:right;background:#333;border:0;color:#fff;padding:8px 12px;border-radius:20px;cursor:pointer}
+.watch{background:#ff2a6d;color:#fff;border:0;padding:14px;width:100%;border-radius:12px;font-weight:800;font-size:16px;margin-top:14px;cursor:pointer}
+@media(min-width:700px){.grid{grid-template-columns:1fr 1fr 1fr 1fr}}
+</style>
+<script src='https://libtl.com/sdk.js' data-zone='12228986' data-sdk='show_12228986'></script>
+</head><body>
+<header><h1>🎬 MS Movie Info</h1><p>Movies • Rating • Story • Best Collection</p></header>
+<nav><a href="#">Home</a><a href="#movies">Movies</a><a href="#about">About</a><a href="#contact">Contact</a></nav>
+<div class="hero"><h2>Best Movies of 2026</h2><p>Top rated movies, full story and rating - Free • Tap any movie 👇</p></div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;padding:0 16px;margin-top:12px" id="filters">
+<button onclick="filterMovies('All')" style="padding:8px 14px;border-radius:20px;border:0;background:#ffd700;font-weight:800;cursor:pointer">All</button>
+<button onclick="filterMovies('Action')" style="padding:8px 14px;border-radius:20px;border:0;background:#333;color:#fff;cursor:pointer">Full Action</button>
+<button onclick="filterMovies('Comedy')" style="padding:8px 14px;border-radius:20px;border:0;background:#333;color:#fff;cursor:pointer">Full Comedy</button>
+<button onclick="filterMovies('Horror')" style="padding:8px 14px;border-radius:20px;border:0;background:#333;color:#fff;cursor:pointer">Horror Full</button>
+<button onclick="filterMovies('Love')" style="padding:8px 14px;border-radius:20px;border:0;background:#333;color:#fff;cursor:pointer">Love Full</button>
+</div>
+<div class="grid" id="movies"></div>
+<div style="text-align:center;padding:0 16px"><button id="seeAllBtn" onclick="toggleSeeAll()" style="padding:12px 20px;border-radius:10px;border:0;background:#ffd700;font-weight:800;cursor:pointer">See All Movies (12) →</button></div>
+
+<div id="about" style="padding:16px"><h2>About Us</h2><p style="opacity:.7;line-height:1.6;font-size:14px">MS Movie Info is a movie information website. Here you will find movie rating, story, cast and review. We do not host any movie files, we only give information.</p></div>
+<div id="contact" style="padding:16px"><h2>Contact Us</h2><p style="opacity:.7;font-size:14px">Email: msmovieinfo@gmail.com<br>Telegram: @MS_EARNiNGWaVe</p></div>
+<footer>© 2026 MS Movie Info • <a href="#" style="color:#fff">Privacy Policy</a> • <a href="#" style="color:#fff">Terms</a><br>Made for movie lovers.</footer>
+
+<div class="modal" id="modal"><div class="sheet">
+<button class="close" onclick="closeModal()">✕ Close</button>
+<img id="mImg" src="">
+<h2 id="mTitle"></h2>
+<div id="mMeta" style="opacity:.7;font-size:13px"></div>
+<p id="mStory" style="line-height:1.6;font-size:14px"></p>
+<div id="mCast" style="font-size:13px;opacity:.8"></div>
+<button class="watch" onclick="watchTrailer()">▶️ Watch Trailer / Watch Ad</button><button class="watch" style="background:#ffd700;color:#000" onclick="watchFullVideo()">🎬 Watch to Full Video (YouTube)</button>
+<p style="font-size:12px;opacity:.6;text-align:center">Trailer দেখতে চাইলে Ads আসবে। Ads দেখলেই Trailer খুলবে।</p>
+</div></div>
+
+<script>
+const movies=[
+{id:1,title:'Action Hero 2026',rating:'8.5',cat:'Action • Thriller • 2h 10m',kind:'Action',color:'2a2aff',label:'Action Movie',story:'A hero fights to save his city from a big crime gang. The gang kidnaps his sister, and he must fight alone against 50 criminals. Full action, car chase, fight scenes.',cast:'Cast: Hero - Arman Khan, Villain - Rashed, Heroine - Mim',trailer:'https://www.youtube.com/results?search_query=Action+Hero+2026+official+trailer'},
+{id:2,title:'Love Story',rating:'8.0',cat:'Romance • Drama • 1h 50m',kind:'Love',color:'ff2a6d',label:'Love Story',story:'A beautiful love story of two friends. They meet in college, fall in love, but family does not accept. They fight for their love.',cast:'Cast: Rahul, Priya, Family - Mr. Ahmed',trailer:'https://www.youtube.com/results?search_query=Love+Story+2026+official+trailer'},
+{id:3,title:'Comedy King',rating:'7.8',cat:'Comedy • Family • 1h 40m',kind:'Comedy',color:'00c853',label:'Comedy',story:'Full comedy movie, laugh non-stop. A funny man comes to village and creates confusion. Everyone laughs.',cast:'Cast: Comedy King - Jalal, Village - Everyone',trailer:'https://www.youtube.com/results?search_query=Comedy+King+2026+full+comedy+trailer'},
+{id:4,title:'Horror Night',rating:'7.5',cat:'Horror • Mystery • 1h 55m',kind:'Horror',color:'ff9800',label:'Horror',story:"Don't watch alone at night! A family moves to a new house, but the house is haunted. Strange sounds at night.",cast:'Cast: Family - Karim, Ghost - Unknown',trailer:'https://www.youtube.com/results?search_query=Horror+Night+2026+official+trailer'},
+{id:5,title:'Full Action 2',rating:'8.2',cat:'Action • 2h 05m',kind:'Action',color:'1a237e',label:'Full Action',story:'Sequel of Action Hero. New villain, bigger fight, city in danger again.',cast:'Cast: Arman Khan',trailer:'https://www.youtube.com/results?search_query=Action+movie+2026+trailer'},
+{id:6,title:'Full Comedy Show',rating:'8.1',cat:'Comedy • 1h 45m',kind:'Comedy',color:'2e7d32',label:'Full Comedy',story:'Full comedy show - 10 funny scenes, family comedy, no boring moment.',cast:'Cast: Jalal, Mim, Rony',trailer:'https://www.youtube.com/results?search_query=Full+comedy+movie+2026+trailer'},
+{id:7,title:'Horror Full Night',rating:'7.9',cat:'Horror • 1h 50m',kind:'Horror',color:'e65100',label:'Horror Full',story:'Full horror night - haunted house, ghost story, mystery solved at end.',cast:'Cast: Karim, Nila',trailer:'https://www.youtube.com/results?search_query=Horror+full+movie+trailer+2026'},
+{id:8,title:'Love Full Story',rating:'8.3',cat:'Romance • 2h 00m',kind:'Love',color:'c2185b',label:'Love Full',story:'Full love story - from school to marriage, all emotions.',cast:'Cast: Rahul, Priya',trailer:'https://www.youtube.com/results?search_query=Love+full+movie+2026+trailer'},
+{id:9,title:'Action Blast',rating:'7.7',cat:'Action • 1h 55m',kind:'Action',color:'283593',label:'Action Blast',story:'Blast action - bike chase, train fight.',cast:'Cast: Arman',trailer:'https://www.youtube.com/results?search_query=Action+blast+trailer'},
+{id:10,title:'Comedy Blast',rating:'7.9',cat:'Comedy • 1h 35m',kind:'Comedy',color:'388e3c',label:'Comedy Blast',story:'Comedy blast - funny village story.',cast:'Cast: Jalal',trailer:'https://www.youtube.com/results?search_query=Comedy+blast+trailer'},
+{id:11,title:'Horror House',rating:'7.6',cat:'Horror • 1h 45m',kind:'Horror',color:'bf360c',label:'Horror House',story:'Horror house - 3 friends go to old house.',cast:'Cast: Karim',trailer:'https://www.youtube.com/results?search_query=Horror+house+trailer'},
+{id:12,title:'Action Love Mix',rating:'8.0',cat:'Action + Love • 2h 10m',kind:'Action',color:'6a1b9a',label:'Action Love',story:'Action + Love mix - hero fights for love.',cast:'Cast: Arman, Mim',trailer:'https://www.youtube.com/results?search_query=Action+love+movie+trailer'},
+];
+renderMovies();
+let currentMovie=null;
+let showAll=false; let currentFilter='All';
+function renderMovies(){
+  let grid=document.getElementById('movies'); grid.innerHTML='';
+  let list=movies.filter(m=> currentFilter==='All' || m.kind===currentFilter);
+  if(!showAll) list=list.slice(0,4);
+  list.forEach(m=>{
+    let d=document.createElement('div'); d.className='card'; d.onclick=()=>openMovie(m.id);
+    d.innerHTML=`<img src="https://via.placeholder.com/400x200/${m.color}/fff?text=${encodeURIComponent(m.label)}"><div><span class="badge">⭐ ${m.rating}</span><h3>${m.title}</h3><p>${m.cat} - ${m.story.slice(0,60)}...<br><b style="color:#ffd700">👉 Tap to see full story</b></p></div>`;
+    grid.appendChild(d);
+  });
+  document.getElementById('seeAllBtn').innerText = showAll ? 'Show Less ↑' : `See All Movies (${movies.length}) →`;
+}
+function filterMovies(kind){ currentFilter=kind; showAll=true; renderMovies(); try{ if(typeof show_12228986==='function'){ show_12228986(); } }catch(e){} }
+function toggleSeeAll(){ showAll=!showAll; renderMovies(); document.getElementById('movies').scrollIntoView({behavior:'smooth'}); try{ if(typeof show_12228986==='function'){ show_12228986(); } }catch(e){} }
+function openMovie(id){
+  let m=movies.find(x=>x.id===id); currentMovie=m;
+  document.getElementById('mImg').src=`https://via.placeholder.com/600x300/${m.color}/fff?text=${encodeURIComponent(m.label)}`;
+  document.getElementById('mTitle').innerText=m.title+' ⭐ '+m.rating;
+  document.getElementById('mMeta').innerText=m.cat;
+  document.getElementById('mStory').innerText='Full Story: '+m.story;
+  document.getElementById('mCast').innerText=m.cast;
+  document.getElementById('modal').classList.add('open');
+  // Show Monetag ad on click - this is where earning happens
+  try{ if(typeof show_12228986==='function'){ show_12228986(); } }catch(e){}
+}
+function watchFullVideo(){
+  let url = currentMovie && currentMovie.trailer ? currentMovie.trailer : 'https://www.youtube.com/results?search_query=movie+full+video';
+  // Ads first, then full video opens - this is where earning happens
+  try{
+    if(typeof show_12228986==='function'){
+      show_12228986().then(()=>{ window.open(url,'_blank'); }).catch(()=>{ window.open(url,'_blank'); });
+      return;
+    }
+  }catch(e){}
+  window.open(url,'_blank');
+}
+function closeModal(){ document.getElementById('modal').classList.remove('open'); }
+function watchTrailer(){
+  let url = currentMovie && currentMovie.trailer ? currentMovie.trailer : 'https://www.youtube.com/results?search_query=movie+trailer';
+  try{
+    if(typeof show_12228986==='function'){
+      show_12228986().then(()=>{ window.open(url,'_blank'); }).catch(()=>{ window.open(url,'_blank'); });
+      return;
+    }
+  }catch(e){}
+  window.open(url,'_blank');
+}
+document.getElementById('modal').onclick=(e)=>{ if(e.target.id==='modal') closeModal(); }
+</script>
+</body></html>
